@@ -17,3 +17,14 @@
   text-align: right;
   align-items: flex-end;
 }
+
+.btn-flexbox{
+  display: flex;
+  text-align: center;
+  width: 50vw;
+  justify-content: center;
+}
+
+.crud-btn {
+  margin: 5px;
+}
