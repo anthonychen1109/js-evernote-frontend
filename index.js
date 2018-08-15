@@ -1,6 +1,7 @@
 document.addEventListener("DOMContentLoaded", () => {
 
-  grabNotes()
+  // displayNotes()
+  displayNotes()
 
   // fetch notes
   function fetchNotes() {
@@ -18,10 +19,37 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function grabNotes() {
-    const userNotes = fetchUsers().then(notes => notes.notes)
-    userNotes.then(notes => notes.forEach( note => {
-      console.log(note.title)
-    }))
+    return fetchUsers().then(notes => notes.notes)
+
   }
+
+  function showBody(e){
+    const toShow = e.target.dataset.id
+    grabNotes()
+      .then(notes => notes.forEach(note => {
+        if(note.id == toShow){
+          const div = document.getElementById('preview-window')
+          const p = document.createElement('p')
+          div.innerText = ''
+          p.innerText = note.body
+          div.append(p)
+        }}
+      ))
+  }
+
+  function displayNotes(){
+    grabNotes()
+    .then(notes => notes.forEach( note => {
+        const previewBtn = document.createElement('button')
+        previewBtn.innerText = "PREVIEW"
+        previewBtn.dataset.id = note.id
+        previewBtn.addEventListener('click', showBody)
+        const li = document.createElement('li')
+        const div = document.getElementById('notes-container')
+        li.innerText = note.title
+        div.append(li, previewBtn)
+    }))
+    }
+
 
 })
