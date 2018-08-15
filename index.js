@@ -5,6 +5,8 @@ document.addEventListener("DOMContentLoaded", () => {
   // displayNotes()
   displayNotes()
 
+
+
   // Edit Function
   function editPost(submitObj) {
     const notesURL = `http://localhost:3000/api/v1/notes/${submitObj.id}`
@@ -16,6 +18,21 @@ document.addEventListener("DOMContentLoaded", () => {
     showBody()
   }
 
+  // Delete Function
+
+  function deletePost(e) {
+    const id = e.target.dataset.id
+    const notesURL = `http://localhost:3000/api/v1/notes/${id}`
+    fetch(notesURL, {
+      method: 'DELETE',
+      headers: {'Content-Type': 'application/json'}
+    })
+    document.getElementById('preview-window').innerText = ''
+    showBody()
+
+  }
+
+  // Create Function
   function createPost(submitObj){
     console.log(submitObj)
     const notesURL = `http://localhost:3000/api/v1/notes/`
@@ -93,7 +110,7 @@ document.addEventListener("DOMContentLoaded", () => {
           deleteBtn.innerText = 'Delete'
           deleteBtn.classList.add('crud-btn')
           deleteBtn.dataset.id = note.id
-          // deleteBtn.addEventListener('click', deletePost)
+          deleteBtn.addEventListener('click', deletePost)
 
           createBtnDiv.append(createBtn)
           editBtnDiv.append(editBtn)
@@ -131,7 +148,8 @@ document.addEventListener("DOMContentLoaded", () => {
         submitBtn.innerText = "Submit"
         submitBtn.addEventListener('click', () => {
         fetchUsers().then(n =>{
-          const submitObj = {title: titleField.value, body: bodyField.value, user: n }
+          // const userOb = {id: n.id, name: n.name }
+          const submitObj = {title: titleField.value, body: bodyField.value, user_id: n.id }
           createPost(submitObj)
           div.innerHTML = ''
           showBody(id)
