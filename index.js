@@ -1,14 +1,26 @@
 document.addEventListener("DOMContentLoaded", () => {
 
+  // console.log(grabNotes().then(n => n.length));
+
   // displayNotes()
   displayNotes()
 
   // Edit Function
   function editPost(submitObj) {
-    console.log(submitObj);
     const notesURL = `http://localhost:3000/api/v1/notes/${submitObj.id}`
     fetch(notesURL, {
       method: 'PATCH',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(submitObj)
+    })
+    showBody()
+  }
+
+  function createPost(submitObj){
+    console.log(submitObj)
+    const notesURL = `http://localhost:3000/api/v1/notes/`
+    fetch(notesURL, {
+      method: 'POST',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify(submitObj)
     })
@@ -74,7 +86,8 @@ document.addEventListener("DOMContentLoaded", () => {
           createBtn.innerText = 'Create'
           createBtn.classList.add('crud-btn')
           createBtn.dataset.id = note.id
-          // createBtn.addEventListener('click', createPost)
+          createBtn.id = `create-${note.id}`
+          createBtn.addEventListener('click', createRender)
           //Delete
           const deleteBtn = document.createElement('button')
           deleteBtn.innerText = 'Delete'
@@ -90,6 +103,44 @@ document.addEventListener("DOMContentLoaded", () => {
         }}
       ))
       displayNotes()
+  }
+
+  function createRender(e){
+
+    const id = e.target.dataset.id
+    const div = document.getElementById('preview-window')
+    div.innerText = ''
+    const form = document.createElement('form')
+    // title
+    // body
+    // submitbutton
+            // h.innerText = note.title
+        div.innerText = ''
+        // p.innerText = note.body
+        const titleField = document.createElement('input')
+        const titleDiv = document.createElement('div')
+        titleDiv.classList.add('form-center')
+        titleField.classList.add('form')
+        const bodyField = document.createElement('textarea')
+        const bodyDiv = document.createElement('div')
+        bodyDiv.classList.add('form-center')
+        bodyField.rows = '8'
+        bodyField.cols = '40'
+        bodyField.classList.add('form')
+        const submitBtn = document.getElementById(`create-${id}`)
+        submitBtn.innerText = "Submit"
+        submitBtn.addEventListener('click', () => {
+        fetchUsers().then(n =>{
+          const submitObj = {title: titleField.value, body: bodyField.value, user: n }
+          createPost(submitObj)
+          div.innerHTML = ''
+          showBody(id)
+        })})
+        titleDiv.append(titleField)
+        bodyDiv.append(bodyField)
+        form.appendChild(titleDiv)
+        form.appendChild(bodyDiv)
+        div.append(form)
   }
 
   function editRender(e) {
