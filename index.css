@@ -1,0 +1,19 @@
+.flexbox{
+  display: flex;
+  text-align: right;
+  flex-direction: column;
+  width: 50vw;
+  align-items: flex-end;
+
+}
+.other-flexbox{
+  display: flex;
+  text-align: center;
+  flex-direction: column;
+  width: 50vw;
+}
+.flexbox-main{
+  display: flex;
+  text-align: right;
+  align-items: flex-end;
+}
