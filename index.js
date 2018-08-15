@@ -4,9 +4,15 @@ document.addEventListener("DOMContentLoaded", () => {
   displayNotes()
 
   // Edit Function
-  function editPost(id) {
-    const notesURL = `http://localhost:3000/api/v1/notes${id}`
-    fetch()
+  function editPost(submitObj) {
+    console.log(submitObj);
+    const notesURL = `http://localhost:3000/api/v1/notes/${submitObj.id}`
+    fetch(notesURL, {
+      method: 'PATCH',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(submitObj)
+    })
+    showBody()
   }
 
   // fetch notes
@@ -31,14 +37,18 @@ document.addEventListener("DOMContentLoaded", () => {
   function fetchNote(id) {
     return fetch(`http://localhost:3000/api/v1/notes/`)
     .then(response => response.json())
-    .then(data => data[id])
+    .then(data => data[id - 1])
   }
 
-  function showBody(e){
-    const toShow = e.target.dataset.id
+  function grabEventId(e){
+    const showID = e.target.dataset.id
+    return showBody(showID)
+  }
+
+  function showBody(grabbedID){
     grabNotes()
       .then(notes => notes.forEach(note => {
-        if(note.id == toShow){
+        if(note.id == grabbedID){
           const div = document.getElementById('preview-window')
           const h = document.createElement('h2')
           h.innerText = note.title
@@ -79,6 +89,7 @@ document.addEventListener("DOMContentLoaded", () => {
           div.append(h, p)
         }}
       ))
+      displayNotes()
   }
 
   function editRender(e) {
@@ -91,37 +102,52 @@ document.addEventListener("DOMContentLoaded", () => {
     // submitbutton
     fetchNote(id)
       .then(note => {
-        // h.innerText = note.title
+            // h.innerText = note.title
         div.innerText = ''
         // p.innerText = note.body
         const titleField = document.createElement('input')
-        titleField.setAttribute('type', 'text')
-        titleField.setAttribute('value', note.title)
-        const bodyField = document.createElement('input')
-        bodyField.setAttribute('type', 'text')
-        bodyField.setAttribute('value', note.body)
+        const titleDiv = document.createElement('div')
+        titleDiv.classList.add('form-center')
+        titleField.value = note.title
+        titleField.classList.add('form')
+        const bodyField = document.createElement('textarea')
+        const bodyDiv = document.createElement('div')
+        bodyDiv.classList.add('form-center')
+        bodyField.rows = '8'
+        bodyField.cols = '40'
+        bodyField.classList.add('form')
+        bodyField.value = note.body
         const submitBtn = document.getElementById(`edit-${id}`)
         submitBtn.innerText = "Submit"
-        submitBtn.addEventListener('click', editPost)
-        form.appendChild(titleField)
-        form.appendChild(bodyField)
+        submitBtn.addEventListener('click', () => {
+          const submitObj = {id: id, title: titleField.value, body: bodyField.value }
+          editPost(submitObj)
+          showBody(id)
+          div.innerHTML = ''
+        })
+        titleDiv.append(titleField)
+        bodyDiv.append(bodyField)
+        form.appendChild(titleDiv)
+        form.appendChild(bodyDiv)
         div.append(form)
       })
   }
 
   function displayNotes(){
     grabNotes()
-    .then(notes => notes.forEach( note => {
+    .then(notes => {
+      const div = document.getElementById('notes-container')
+      div.innerHTML = ''
+      return notes.forEach( note => {
         const previewBtn = document.createElement('button')
         previewBtn.innerText = "PREVIEW"
         previewBtn.dataset.id = note.id
-        previewBtn.addEventListener('click', showBody)
+        previewBtn.addEventListener('click', grabEventId)
         const li = document.createElement('li')
-        const div = document.getElementById('notes-container')
         li.innerText = note.title
         div.append(li, previewBtn)
-    }))
-    }
+    })})
+  }
 
 
 })
